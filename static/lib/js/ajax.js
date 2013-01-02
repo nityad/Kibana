@@ -1540,6 +1540,11 @@ function bind_clicks() {
     window.location.hash = '#';
   });
 
+  // Predefined query list
+  $("#predefined_queryinput").change(function () {
+    $('#queryinput').val($(this).val());
+    $('#searchform').submit();
+  });
 
   // Time changes
   $('#timeinput').change(function () {
