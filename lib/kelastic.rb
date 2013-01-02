@@ -57,6 +57,7 @@ class Kelastic
 
     # Returns list of index-date names which intersect with range defined by from and to
     def index_range(from,to,limit = -1)
+      step_time = from
       if KibanaConfig::Smart_index == true
       	index_pattern = "logstash-%Y.%m.%d"
       	if KibanaConfig::Smart_index_pattern != ""
@@ -67,17 +68,18 @@ class Kelastic
         for index in index_pattern do
           begin
             requested << from.getutc.strftime(index)
-          end while (from += KibanaConfig::Smart_index_step) <= to
+          end while (step_time += KibanaConfig::Smart_index_step) <= to
+          requested << to.getutc.strftime(index) unless requested.include? to.getutc.strftime(index)
         end
 
         intersection = requested & all_indices
         if intersection.length <= KibanaConfig::Smart_index_limit
           intersection.sort.reverse[0..limit]
         else
-          KibanaConfig::Default_index
+          [KibanaConfig::Default_index]
         end
       else
-        KibanaConfig::Default_index
+        [KibanaConfig::Default_index]
       end
     end
 
