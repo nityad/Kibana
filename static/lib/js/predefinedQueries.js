@@ -1,14 +1,14 @@
 var selectValues = {
-    "Query 1": "Query 1",
-    "Query 2": "Query 2"
+    "400 errors": "@fields.response:\"400\"",
+    "GET requests": "@fields.verb:\"GET\""
 };
 
 $(function() {
     $.each(selectValues, function(key, value) {
          $('#predefined_queryinput')
              .append($("<option></option>")
-             .attr("value",key)
-             .text(value));
+             .attr("value",value)
+             .text(key));
         });
 });
 
