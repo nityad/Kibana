@@ -847,6 +847,11 @@ function CreateLogTable(objArray, fields, theme, enableHeader) {
   var i = 1;
   for (var objid in array) {
     var object = array[objid];
+    for(var key in object.highlight) {
+      var hlfield = key;
+      var hlvalue = object.highlight[hlfield];
+    }
+
     var id = object._id;
     var alt = i % 2 == 0 ? '' : 'alt'
     var time = prettyDateString(
@@ -857,10 +862,25 @@ function CreateLogTable(objArray, fields, theme, enableHeader) {
     str += '<td class=firsttd>' + time + '</td>';
     for (var index in fields) {
       var field = fields[index];
-      var value = get_field_value(object,field)
+      if (typeof hlfield === "undefined") 
+        var value = get_field_value(object,field);
+      else
+      {
+        if ( field.toString() == hlfield.toString() ) 
+          var value = hlvalue;
+        else
+          var value = get_field_value(object,field);
+      }
+
       var value = value === undefined ? "-" : value.toString();
+      var value = xmlEnt(wbr(value),10);
+      var value = value.replace(RegExp("@KIBANA_HIGHLIGHT_START@(.*?)@KIBANA_HIGHLIGHT_END@", "g"),
+	    function (all, text, char) {
+	      return "<span class='highlightedtext'>" + text + "</span>";
+	    }
+	);
       str += '<td class="column" data-field="'+field+'">' +
-        xmlEnt(wbr(value, 10)) + '</td>';
+        value + '</td>';
     }
     str += '</tr><tr class="hidedetails"></tr>';
     i++;
@@ -900,11 +920,36 @@ function details_table(objid,theme) {
     var trclass = (i % 2 == 0) ?
       'class="alt '+field_id+'_row"' : 'class="'+field_id+'_row"';
 
-    str += "<tr " + trclass + ">" +
-      "<td class='firsttd " + field_id + "_field'>" + field + "</td>" +
-      "<td style='width: 60px'>" + buttons + "</td>" +
-      '<td>' + xmlEnt(wbr(value, 10)) +
-      "</td></tr>";
+    // Are URLs clickable ?
+    if (resultjson.kibana.clickable_urls) {
+      var value = value === undefined ? "-" : value.toString();
+      // Detect URLs and inserts delimiters
+      var value = value.replace(RegExp("(https?://([-\\w\\.]+)+(:\\d+)?(/([\\w/_\\.]*(\\?\\S+)?)?)?)", "g"),
+        function (all, text, char) {
+          return "@KIBANA_LINK_START@" + text + "@KIBANA_LINK_END@";
+        }
+      );
+      var value = xmlEnt(wbr(value),10);
+      // Replace delimiters by HTML code
+      var value = value.replace(RegExp("@KIBANA_LINK_START@(.*?)@KIBANA_LINK_END@", "g"), 
+        function (all, text) {
+          // Clean link
+          var stripped = text.replace( new RegExp("<del>&#8203;</del>","g"),"");
+          return "<a href='" + stripped + "' target='_blank'>" + text + "</a>";
+        }
+      );
+      str += "<tr " + trclass + ">" +
+	"<td class='firsttd " + field_id + "_field'>" + field + "</td>" +
+	"<td style='width: 60px'>" + buttons + "</td>" +
+	'<td>' + value +
+	"</td></tr>";
+    } else {
+      str += "<tr " + trclass + ">" +
+        "<td class='firsttd " + field_id + "_field'>" + field + "</td>" +
+        "<td style='width: 60px'>" + buttons + "</td>" +
+        '<td>' + xmlEnt(wbr(value, 10)) +
+        "</td></tr>";
+    }
 
     i++;
 
