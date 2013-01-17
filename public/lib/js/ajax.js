@@ -94,7 +94,7 @@ function getPage() {
   // Show the user an animated loading thingy
   setMeta('loading');
 
-  var sendhash = window.location.hash.replace(/^#/, '');;
+  var sendhash = encodeURIComponent(window.location.hash.replace(/^#/, ''));
 
   //Get the data and display it
   window.request = $.ajax({
@@ -103,7 +103,7 @@ function getPage() {
     cache: false,
     success: function (json) {
       // Make sure we're still on the same page
-      if (sendhash == window.location.hash.replace(/^#/, '')) {
+      if (sendhash == encodeURIComponent(window.location.hash.replace(/^#/, ''))) {
         //Parse out the result
         window.resultjson = JSON.parse(json);
 
@@ -205,7 +205,7 @@ function getPage() {
 function getGraph(interval) {
 
   //generate the parameter for the php script
-  var sendhash = window.location.hash.replace(/^#/, '');
+  var sendhash = encodeURIComponent(window.location.hash.replace(/^#/, ''));
   var mode = window.hashjson.graphmode;
   window.segment = typeof window.segment === 'undefined' ? '' : window.segment;
   //Get the data and display it
@@ -215,7 +215,7 @@ function getGraph(interval) {
     cache: false,
     success: function (json) {
       // Make sure we're still on the same page
-      if (sendhash == window.location.hash.replace(/^#/, '')) {
+      if (sendhash == encodeURIComponent(window.location.hash.replace(/^#/, ''))) {
 
         //Parse out the returned JSON
         var graphjson = JSON.parse(json);
@@ -302,7 +302,7 @@ function analyzeField(field, mode) {
 
 function getID() {
   // Show the user an animated loading thingy
-  var sendhash = window.location.hash.replace(/^#/, '');
+  var sendhash = encodeURIComponent(window.location.hash.replace(/^#/, ''));
   //Get the data and display it
   window.request = $.ajax({
     url: "api/id/"+window.hashjson.id+"/"+window.hashjson.index,
@@ -334,7 +334,7 @@ function getID() {
 function getAnalysis() {
   setMeta('loading');
   //generate the parameter for the php script
-  var sendhash = window.location.hash.replace(/^#/, '');
+  var sendhash = encodeURIComponent(window.location.hash.replace(/^#/, ''));
   //Get the data and display it
   window.request = $.ajax({
     url: "api/analyze/" + window.hashjson.analyze_field + "/" +
@@ -343,7 +343,7 @@ function getAnalysis() {
     cache: false,
     success: function (json) {
       // Make sure we're still on the same page
-      if (sendhash == window.location.hash.replace(/^#/, '')) {
+      if (sendhash == encodeURIComponent(window.location.hash.replace(/^#/, ''))) {
 
         //Parse out the returned JSON
         var field = window.hashjson.analyze_field;
@@ -525,7 +525,7 @@ function analysisTable(resultjson) {
     var idv = object.id.split('||');
     var fields = window.hashjson.analyze_field.split(',,');
     for (var count = 0; count < fields.length; count++) {
-      metric[fields[count]]=idv[count];
+      metric[fields[count]]=xmlEnt(idv[count]);
     }
     var analyze_field = fields.join(' ')
     metric['Count'] = object.count;
@@ -541,7 +541,7 @@ function analysisTable(resultjson) {
           object.trend + '</span>';
       }
     }
-    metric['Action'] =  "<span class='raw'>" + object.id + "</span>"+
+    metric['Action'] =  "<span class='raw'>" + xmlEnt(object.id) + "</span>"+
       "<i data-mode='' data-field='" + analyze_field + "' "+
         "class='msearch icon-search icon-large jlink'></i> " +
       "<i data-mode='analysis' data-field='"+analyze_field+"' "+
@@ -570,7 +570,7 @@ function termsTable(resultjson) {
       if (typeof termv[count] === 'undefined' || termv[count] == "null" ) {
         var value = ''
       } else {
-        var value = termv[count]
+        var value = xmlEnt(termv[count])
       }
       metric[fields[count]] = value;
     }
@@ -579,7 +579,7 @@ function termsTable(resultjson) {
     metric['Percent'] =  Math.round(
       object.count / resultjson.hits.total * 10000
       ) / 100 + '%';
-    metric['Action'] =  "<span class='raw'>" + object.term + "</span>"+
+    metric['Action'] =  "<span class='raw'>" + xmlEnt(object.term) + "</span>"+
       "<i data-mode='' data-field='" + analyze_field + "' "+
         "class='msearch icon-search icon-large jlink'></i> " +
       "<i data-mode='analysis' data-field='"+analyze_field+"' "+
@@ -711,7 +711,7 @@ function microAnalysisTable (json,field,count) {
     var field_val = "<i class=icon-sign-blank style='color:"+colors[i]+"'></i> "+
     "<a class='jlink highlight_events' data-mode='value'"+
     " data-field='"+field+"' data-objid='"+objids+"'>"+show_val+"</a>";
-    var buttons = "<span class='raw'>" + value[0] + "</span>" +
+    var buttons = "<span class='raw'>" + xmlEnt(value[0]) + "</span>" +
               "<i class='jlink icon-large icon-search msearch'"+
               " data-action='' data-field='"+field+"'></i> " +
               "<i class='jlink icon-large icon-ban-circle msearch'"+
@@ -883,6 +883,7 @@ function CreateLogTable(objArray, fields, theme, enableHeader) {
         value + '</td>';
     }
     str += '</tr><tr class="hidedetails"></tr>';
+    hlfield = undefined;
     i++;
   }
 
@@ -1711,7 +1712,7 @@ function bind_clicks() {
         ' field. Dismiss this notice to clear highlights.';
     if ($(this).attr('data-mode') == 'value')
       var notice = 'Highlighting <strong>'+objids.length+' events</strong>' +
-        ' where <strong>' + field + '</strong> is <strong>' + $(this).text() +
+        ' where <strong>' + field + '</strong> is <strong>' + xmlEnt($(this).text()) +
         '</strong>. Dismiss this notice to clear highlights.';
 
     $('#logs').prepend(
