@@ -21,6 +21,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'fastercsv'
   gem.add_runtime_dependency 'tzinfo'
   gem.add_runtime_dependency 'thin'
+  gem.add_runtime_dependency 'net-ldap'
 
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec'
