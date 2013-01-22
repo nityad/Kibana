@@ -1,0 +1,53 @@
+title>Kibana Login</title>
+<link href="/lib/bootstrap/css/bootstrap.css" rel="stylesheet">
+<link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="/lib/css/style.css">
+<link rel="stylesheet" href="/lib/css/font-awesome.css">
+<link rel="stylesheet" href="/lib/css/jquery-ui-1.8.16.custom.css">
+  <style type="text/css">
+    body {
+    padding-top: 55px;
+    padding-bottom: 40px;
+    }
+  </style>
+    <style type="text/css">
+
+      .container-fluid {
+        max-width: 300px;
+        padding: 19px 29px 29px;
+        margin: 0 auto 20px;
+      }
+      .container-fluid input[type="text"],
+      .container-fluid input[type="password"] {
+        font-size: 16px;
+        height: auto;
+        margin-bottom: 15px;
+        padding: 7px 9px;
+      }
+      .container-fluid input[type="submit"] {
+      height: auto;
+      margin-bottom: 10px;
+      padding: 15px 17px;
+      }
+   </style>
+      <div class="content span10" id=main>
+        <div>
+          <p class='input-append'  id=graphheader></p>
+          <div id=graph_container>
+            <div id=graph>
+              <div class=hero-unit>
+                <h1 align="center"><img src=images/kibana_banner.png></h1><br><br>
+                        <div class="container">
+                         <form action='/login' method='post' class="container-fluid">
+                          <p><b>Please Login</b></p>
+                          <input name='username' input type="text" placeholder="username" autofocus>
+                          <input name='password' input type="password" placeholder="password" >
+                          <br/><input class='btn' type='submit' value='login' >
+                         </form>
+                         <span class=ui-state-erro id="result"></span>
+                        </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
